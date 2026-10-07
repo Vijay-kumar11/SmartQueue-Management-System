@@ -46,8 +46,6 @@ The system manages customer queues using token numbers and provides separate wor
 
 ## Project Architecture
 
-The project follows a simple layered architecture:
-
 ```text
 Main.java
     ↓
@@ -66,37 +64,40 @@ MySQL
 
 **Main.java**
 
-Handles user interaction, login, menus, and input.
+* Handles user interaction
+* Login
+* Menu navigation
+* User input
 
 **QueueManager**
 
-Contains the queue-related business logic and controls valid ticket status transitions.
+* Contains queue-related business logic
+* Handles valid ticket status transitions
+* Coordinates DAO operations
 
 **DAO Classes**
-
-Handle database operations using JDBC.
 
 * `UserDAO`
 * `ServiceDAO`
 * `QueueDAO`
 * `QueueHistoryDAO`
 
-**Model Classes**
+These classes handle database operations using JDBC.
 
-Represent application entities.
+**Model Classes**
 
 * `User`
 * `Service`
 * `QueueTicket`
 * `QueueHistory`
 
+These classes represent the application's main entities.
+
 **DatabaseConnection**
 
-Creates the JDBC connection to MySQL.
+* Establishes the JDBC connection between Java and MySQL.
 
 ## Queue Workflow
-
-A customer ticket follows these valid status transitions:
 
 ```text
 WAITING
@@ -108,7 +109,7 @@ SERVING
 COMPLETED
 ```
 
-Additional valid flows:
+Additional supported transitions:
 
 ```text
 WAITING → CANCELLED
@@ -120,7 +121,7 @@ Invalid status transitions are rejected by the application.
 
 ## Database Structure
 
-The application uses four main tables:
+The project uses four main tables:
 
 ```text
 users
@@ -135,35 +136,75 @@ Stores customer, staff, and admin information.
 
 ### services
 
-Stores the services available in the queue system.
+Stores the available queue services.
 
 ### queue_tickets
 
-Stores token numbers, users, services, ticket status, and creation time.
+Stores generated queue tickets, token numbers, users, services, and ticket status.
 
 ### queue_history
 
-Stores every status change made to a queue ticket.
+Stores the history of ticket status changes.
+
+## Demo Login Credentials
+
+The repository includes public demo credentials so recruiters can test the different user roles.
+
+### Customer
+
+```text
+Email:    vijay@gmail.com
+Password: Demo@123
+Role:     CUSTOMER
+```
+
+### Staff
+
+```text
+Email:    staff@gmail.com
+Password: Demo@123
+Role:     STAFF
+```
+
+### Admin
+
+```text
+Email:    admin@gmail.com
+Password: Demo@123
+Role:     ADMIN
+```
+
+> **Note:** These are public demo credentials created only for testing this GitHub project. They are not production credentials.
 
 ## Database Setup
 
 ### 1. Install MySQL
 
-Make sure MySQL Server is installed and running.
+Make sure MySQL Server is installed and running on your system.
 
-### 2. Create the database
+### 2. Create the Database
 
-Open MySQL Workbench or the MySQL command line.
-
-Run the SQL script provided in:
+Open MySQL Workbench or the MySQL command line and run:
 
 ```text
 database/smart_queue.sql
 ```
 
-The script creates the database, tables, and sample users and services.
+The SQL file creates:
 
-### 3. Configure the database connection
+* `smart_queue` database
+* `users` table
+* `services` table
+* `queue_tickets` table
+* `queue_history` table
+* Demo users
+* Demo services
+
+The script is designed to avoid duplicate demo users and services when the setup is run again.
+
+> For the cleanest demo experience, use a fresh `smart_queue` database.
+
+### 3. Configure MySQL Credentials
 
 Open:
 
@@ -171,66 +212,83 @@ Open:
 src/util/DatabaseConnection.java
 ```
 
-Update the MySQL username and password for your local MySQL installation.
-
-Example:
+Update the local MySQL username and password:
 
 ```java
-private static final String URL =
-    "jdbc:mysql://localhost:3306/smart_queue";
-
-private static final String USERNAME =
-    "root";
-
-private static final String PASSWORD =
-    "YOUR_MYSQL_PASSWORD";
+private static final String USERNAME = "root";
+private static final String PASSWORD = "YOUR_MYSQL_PASSWORD";
 ```
 
-Replace `YOUR_MYSQL_PASSWORD` with your local MySQL password.
+Replace `YOUR_MYSQL_PASSWORD` with your own local MySQL password.
 
-**Do not commit real database credentials to GitHub.**
+**Do not commit your real database password to GitHub.**
 
 ## MySQL Connector/J
 
 The project uses **MySQL Connector/J** for JDBC connectivity.
 
-The connector JAR is included in:
+The required JAR file is included in:
 
 ```text
 lib/
+└── mysql-connector-j-26.7.0.jar
 ```
-
-The project is configured to reference this library through the VS Code project configuration.
 
 ## How to Run
 
-### Using VS Code
+### Step 1 — Clone the Repository
 
-1. Clone the repository.
-2. Open the project in VS Code.
-3. Make sure Java is installed.
-4. Make sure MySQL Server is running.
-5. Create the `smart_queue` database using `database/smart_queue.sql`.
-6. Configure your MySQL credentials in `DatabaseConnection.java`.
-7. Make sure the MySQL Connector/J library is available in the project's `lib` folder.
-8. Open:
+```bash
+git clone https://github.com/Vijay-kumar11/SmartQueue-Management-System.git
+```
+
+### Step 2 — Open the Project
+
+Open the project folder in VS Code.
+
+### Step 3 — Start MySQL
+
+Make sure the MySQL server is running.
+
+### Step 4 — Set Up the Database
+
+Run:
+
+```text
+database/smart_queue.sql
+```
+
+### Step 5 — Configure Database Credentials
+
+Update:
+
+```text
+src/util/DatabaseConnection.java
+```
+
+with your local MySQL username and password.
+
+### Step 6 — Run the Application
+
+Open:
 
 ```text
 src/Main.java
 ```
 
-9. Run `Main.java`.
+Run `Main.java`.
 
 The application starts with:
 
 ```text
-SMART QUEUE MANAGEMENT SYSTEM
+=========================================
+   SMART QUEUE MANAGEMENT SYSTEM
+=========================================
+
 Project Started Successfully!
 ```
 
-## Example Workflow
-
-### Customer
+## Example Customer Workflow
 
 ```text
 Login
@@ -241,12 +299,16 @@ Generate Queue Ticket
   ↓
 Check Queue Position
   ↓
-Wait for Staff
+View My Tickets
+  ↓
+Cancel Ticket if required
 ```
 
-### Staff
+## Example Staff Workflow
 
 ```text
+Login
+  ↓
 View Waiting Queue
   ↓
 Call Next Customer
@@ -256,21 +318,25 @@ Start Service
 Complete Service
 ```
 
-### Admin
+Staff can also skip a customer and view ticket history.
+
+## Example Admin Workflow
 
 ```text
-View Users
+Login
   ↓
-View Services
+View All Users
   ↓
-View Queue Tickets
+View All Services
+  ↓
+View All Queue Tickets
   ↓
 View Ticket History
 ```
 
 ## Error Handling
 
-The application handles common invalid operations such as:
+The application handles several invalid situations, including:
 
 * Invalid login credentials
 * Invalid menu choices
@@ -279,9 +345,19 @@ The application handles common invalid operations such as:
 * Invalid ticket status transitions
 * Database operation failures
 
-## Key Java Concepts Demonstrated
+Example:
 
-This project demonstrates practical usage of:
+```text
+Invalid choice. Please try again.
+```
+
+and:
+
+```text
+Ticket not found.
+```
+
+## Key Java Concepts Demonstrated
 
 * Classes and Objects
 * Encapsulation
@@ -298,9 +374,31 @@ This project demonstrates practical usage of:
 * Layered architecture
 * Separation of business logic and database access
 
+## Project Architecture Explanation
+
+The application follows a simple layered architecture:
+
+```text
+User
+ ↓
+Main.java
+ ↓
+QueueManager
+ ↓
+DAO Layer
+ ↓
+DatabaseConnection
+ ↓
+JDBC
+ ↓
+MySQL
+```
+
+This separation keeps user interaction, business logic, and database operations organized.
+
 ## Future Improvements
 
-Possible future improvements include:
+Possible improvements for future versions include:
 
 * Password hashing
 * Better database transaction management
@@ -312,7 +410,7 @@ Possible future improvements include:
 * REST APIs
 * Spring Boot backend
 * React frontend
-* Real-time customer notifications
+* Real-time queue notifications
 
 ## Author
 
@@ -322,10 +420,23 @@ B.Tech CSE — 2026
 
 GitHub:
 
-`https://github.com/Vijay-kumar11`
+```text
+https://github.com/Vijay-kumar11
+```
 
 ## Project Status
 
 **Version 1 — Completed**
 
-Built as a Core Java + JDBC + MySQL project to demonstrate object-oriented programming, database connectivity, business logic, database operations, and queue management.
+Smart Queue Management System V1 was built using **Core Java + JDBC + MySQL** to demonstrate:
+
+* Object-Oriented Programming
+* Java Collections
+* Exception Handling
+* JDBC database connectivity
+* MySQL database operations
+* Business logic
+* Queue management
+* Role-based workflows
+* Layered application architecture
+* Git and GitHub project management
