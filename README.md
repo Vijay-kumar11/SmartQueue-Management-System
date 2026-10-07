@@ -188,6 +188,8 @@ private static final String PASSWORD =
 
 Replace `YOUR_MYSQL_PASSWORD` with your local MySQL password.
 
+**Do not commit real database credentials to GitHub.**
+
 ## MySQL Connector/J
 
 The project uses **MySQL Connector/J** for JDBC connectivity.
@@ -198,11 +200,7 @@ The connector JAR is included in:
 lib/
 ```
 
-The project is configured to reference this library through:
-
-```text
-.vscode/settings.json
-```
+The project is configured to reference this library through the VS Code project configuration.
 
 ## How to Run
 
@@ -214,13 +212,14 @@ The project is configured to reference this library through:
 4. Make sure MySQL Server is running.
 5. Create the `smart_queue` database using `database/smart_queue.sql`.
 6. Configure your MySQL credentials in `DatabaseConnection.java`.
-7. Open:
+7. Make sure the MySQL Connector/J library is available in the project's `lib` folder.
+8. Open:
 
 ```text
 src/Main.java
 ```
 
-8. Run `Main.java`.
+9. Run `Main.java`.
 
 The application starts with:
 
@@ -287,10 +286,8 @@ This project demonstrates practical usage of:
 * Classes and Objects
 * Encapsulation
 * Constructors
-* Inheritance concepts
-* Interfaces concepts
 * Methods
-* Collections
+* Java Collections
 * `ArrayList`
 * Exception Handling
 * JDBC
@@ -331,4 +328,4 @@ GitHub:
 
 **Version 1 — Completed**
 
-Built as a Core Java + JDBC + MySQL project to demonstrate object-oriented programming, database connectivity, business logic, and queue management.
+Built as a Core Java + JDBC + MySQL project to demonstrate object-oriented programming, database connectivity, business logic, database operations, and queue management.
